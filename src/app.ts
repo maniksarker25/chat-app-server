@@ -5,12 +5,17 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import {} from 'express';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import notFound from './app/middlewares/notFound';
 const app: Application = express();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
+// global error handler-------
 app.use(globalErrorHandler);
+
+// not found
+app.use(notFound);
 
 export default app;
