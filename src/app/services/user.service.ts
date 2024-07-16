@@ -4,7 +4,6 @@ import { IUser } from '../interfaces/user.interface';
 import User from '../models/user.model';
 import bcrypt from 'bcrypt';
 import config from '../config';
-import { number } from 'zod';
 const registerUserIntoDB = async (payload: IUser) => {
   const user = await User.findOne({ email: payload.email });
   // check if user is already registered
