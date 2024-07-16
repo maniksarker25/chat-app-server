@@ -1,5 +1,7 @@
+import { Types } from 'mongoose';
+
 export interface IConversation {
-  sender: string;
-  receiver: string;
-  message: string;
+  sender: Types.ObjectId;
+  receiver: Types.ObjectId;
+  message: string[];
 }
