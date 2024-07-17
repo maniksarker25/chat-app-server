@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import AppError from '../error/AppError';
-import { IUser } from '../interfaces/user.interface';
+import { IUser } from '../interface/user.interface';
 import User from '../models/user.model';
 import bcrypt from 'bcrypt';
 import config from '../config';
