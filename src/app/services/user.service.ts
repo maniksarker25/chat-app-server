@@ -4,6 +4,7 @@ import { IUser } from '../interfaces/user.interface';
 import User from '../models/user.model';
 import bcrypt from 'bcrypt';
 import config from '../config';
+import { jwtHelpers } from '../helpers/jwtHelpers';
 const registerUserIntoDB = async (payload: IUser) => {
   const user = await User.findOne({ email: payload.email });
   // check if user is already registered
@@ -44,8 +45,24 @@ const loginUserIntoDB = async (payload: Partial<IUser>) => {
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not matched');
   }
+
+  const jwtPayload = {
+    id: user?._id,
+    email: user?.email,
+  };
+
+  const token = jwtHelpers.createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return {
+    accessToken: token,
+  };
 };
 
 export const userServices = {
   registerUserIntoDB,
+  loginUserIntoDB,
 };
