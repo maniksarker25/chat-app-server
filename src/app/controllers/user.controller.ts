@@ -38,7 +38,7 @@ const loginUser = catchAsync(async (req, res) => {
 
 // update user
 const updateUser = catchAsync(async (req, res) => {
-  const result = await userServices.updateUser(req?.user?.id, req.body);
+  const result = await userServices.updateUserIntoDB(req?.user?.id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

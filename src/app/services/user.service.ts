@@ -69,17 +69,20 @@ const loginUserIntoDB = async (payload: Partial<IUser>) => {
 };
 
 // update user
-const updateUser = async (id: string, payload: Partial<IUser>) => {
+const updateUserIntoDB = async (id: string, payload: Partial<IUser>) => {
   const user = await User.findById(id);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const result = await User.findByIdAndUpdate(id, payload);
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  }).select('-password');
   return result;
 };
 
 export const userServices = {
   registerUserIntoDB,
   loginUserIntoDB,
-  updateUser,
+  updateUserIntoDB,
 };
