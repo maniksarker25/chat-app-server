@@ -30,6 +30,22 @@ const registerUserIntoDB = async (payload: IUser) => {
   return result;
 };
 
+// login user
+const loginUserIntoDB = async (payload: Partial<IUser>) => {
+  const user = await User.findOne({ email: payload.email });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const isPasswordMatched = await bcrypt.compare(
+    payload?.password as string,
+    user?.password,
+  );
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Password does not matched');
+  }
+};
+
 export const userServices = {
   registerUserIntoDB,
 };
