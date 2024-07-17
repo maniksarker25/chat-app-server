@@ -4,3 +4,4 @@ export interface IUser {
   password: string;
   profile_pic: string;
 }
+
