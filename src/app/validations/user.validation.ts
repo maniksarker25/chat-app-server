@@ -30,7 +30,18 @@ const loginUserValidationSchema = z.object({
   }),
 });
 
+//
+const updateUserValidationSchema = z.object({
+  body: z.object({
+    name: z.string({ invalid_type_error: 'Name must be a string' }).optional(),
+    profile_pic: z
+      .string({ invalid_type_error: 'Profile pic must be a string' })
+      .optional(),
+  }),
+});
+
 export const userValidations = {
   registerUserValidationSchema,
   loginUserValidationSchema,
+  updateUserValidationSchema,
 };
