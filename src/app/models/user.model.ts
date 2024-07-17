@@ -25,6 +25,11 @@ const userSchema = new Schema<IUser>(
   },
 );
 
+userSchema.post('save', function (doc, next) {
+  doc.set('password', undefined);
+  next();
+});
+
 const User = model<IUser>('User', userSchema);
 
 export default User;
