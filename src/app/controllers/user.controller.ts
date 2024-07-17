@@ -2,6 +2,7 @@ import { userServices } from '../services/user.service';
 import sendResponse from '../utils/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync';
+import config from '../config';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await userServices.registerUserIntoDB(req.body);
@@ -16,12 +17,22 @@ const registerUser = catchAsync(async (req, res) => {
 
 // login user
 const loginUser = catchAsync(async (req, res) => {
-  const result = await userServices.loginUserIntoDB(req.body);
+  const { accessToken, refreshToken } = await userServices.loginUserIntoDB(
+    req.body,
+  );
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 60 * 24 * 265,
+  });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User login successfully',
-    data: result,
+    data: {
+      accessToken,
+    },
   });
 });
 

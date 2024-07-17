@@ -8,6 +8,11 @@ const createToken = (payload: any, secret: string, expiresIn: string) => {
   return token;
 };
 
+const verifyToken = (token: string, secret: string) => {
+  return jwt.verify(token, secret);
+};
+
 export const jwtHelpers = {
   createToken,
+  verifyToken,
 };

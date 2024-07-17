@@ -51,14 +51,20 @@ const loginUserIntoDB = async (payload: Partial<IUser>) => {
     email: user?.email,
   };
 
-  const token = jwtHelpers.createToken(
+  const accessToken = jwtHelpers.createToken(
     jwtPayload,
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string,
   );
+  const refreshToken = jwtHelpers.createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as string,
+  );
 
   return {
-    accessToken: token,
+    accessToken,
+    refreshToken,
   };
 };
 
