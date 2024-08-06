@@ -68,6 +68,12 @@ const loginUserIntoDB = async (payload: Partial<IUser>) => {
   };
 };
 
+//
+const getMyProfileFromDB = async (id: string) => {
+  const result = await User.findById(id);
+  return result;
+};
+
 // update user
 const updateUserIntoDB = async (id: string, payload: Partial<IUser>) => {
   const user = await User.findById(id);
@@ -84,5 +90,6 @@ const updateUserIntoDB = async (id: string, payload: Partial<IUser>) => {
 export const userServices = {
   registerUserIntoDB,
   loginUserIntoDB,
+  getMyProfileFromDB,
   updateUserIntoDB,
 };

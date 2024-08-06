@@ -14,10 +14,7 @@ const registerUserValidationSchema = z.object({
       required_error: 'Password is required',
       invalid_type_error: 'Password must be a string',
     }),
-    profile_pic: z.string({
-      required_error: 'Profile picture is required',
-      invalid_type_error: 'Profile pic must be a string',
-    }),
+    profile_pic: z.string().optional(),
   }),
 });
 
