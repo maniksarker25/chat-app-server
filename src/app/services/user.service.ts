@@ -70,7 +70,7 @@ const loginUserIntoDB = async (payload: Partial<IUser>) => {
 
 //
 const getMyProfileFromDB = async (id: string) => {
-  const result = await User.findById(id);
+  const result = await User.findById(id).select('-password');
   return result;
 };
 

@@ -17,7 +17,7 @@ router.post(
   validateRequest(userValidations.loginUserValidationSchema),
   userControllers.loginUser,
 );
-router.get('/my-profile', userControllers.getMyProfile);
+router.get('/my-profile/:id', userControllers.getMyProfile);
 router.patch(
   '/update-profile',
   auth(),

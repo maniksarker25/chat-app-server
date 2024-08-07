@@ -26,7 +26,7 @@ const userSchema = new Schema<IUser>(
 );
 
 userSchema.post('save', function (doc, next) {
-  doc.set('password', undefined);
+  doc.password = '';
   next();
 });
 
