@@ -2,16 +2,16 @@ import express, { Application } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import http, { Server as HTTPServer } from 'http';
 
-const app: Application = express();
+export const app: Application = express();
 
 // Create an HTTP server
-const server: HTTPServer = http.createServer(app);
+export const server: HTTPServer = http.createServer(app);
 
 // Initialize Socket.IO server with CORS configuration
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://localhost:3000', // Allow requests from this origin
-    credentials: true, // Enable credentials
+    origin: 'http://localhost:3000',
+    credentials: true,
   },
 });
 
@@ -25,4 +25,4 @@ io.on('connection', (socket) => {
   });
 });
 
-export { app, server };
+// export { app, server };

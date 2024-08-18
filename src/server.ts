@@ -1,8 +1,9 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import config from './app/config';
+// import { server } from './app/socket';
 // import app from './app';
-import { server } from '../src/app/socket/index';
+import server from './app';
 
 let myServer: Server;
 
