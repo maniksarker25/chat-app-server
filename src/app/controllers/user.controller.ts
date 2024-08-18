@@ -38,8 +38,7 @@ const loginUser = catchAsync(async (req, res) => {
 
 //
 const getMyProfile = catchAsync(async (req, res) => {
-  const id = req.params.id;
-  const result = await userServices.getMyProfileFromDB(id);
+  const result = await userServices.getMyProfileFromDB(req?.user?.id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -59,9 +58,21 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
+const getAllUsers = catchAsync(async (req, res) => {
+  const { searchTerm } = req.query;
+  const result = await userServices.getAllUserFromDB(searchTerm as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User retrieved successfully',
+    data: result,
+  });
+});
+
 export const userControllers = {
   registerUser,
   loginUser,
   getMyProfile,
   updateUser,
+  getAllUsers,
 };

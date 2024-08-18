@@ -87,9 +87,19 @@ const updateUserIntoDB = async (id: string, payload: Partial<IUser>) => {
   return result;
 };
 
+const getAllUserFromDB = async (searchTerm: string) => {
+  const query = new RegExp(searchTerm, 'i');
+
+  const result = await User.find({
+    $or: [{ name: query }, { email: query }],
+  }).select('-password');
+  return result;
+};
+
 export const userServices = {
   registerUserIntoDB,
   loginUserIntoDB,
   getMyProfileFromDB,
   updateUserIntoDB,
+  getAllUserFromDB,
 };
