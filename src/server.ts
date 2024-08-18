@@ -1,14 +1,15 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import config from './app/config';
-import app from './app';
+// import app from './app';
+import { server } from '../src/app/socket/index';
 
-let server: Server;
+let myServer: Server;
 
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
-    server = app.listen(config.port, () => {
+    myServer = server.listen(config.port, () => {
       console.log(`Chat app listening on port ${config.port}`);
     });
   } catch (error) {
@@ -19,8 +20,8 @@ async function main() {
 main();
 
 process.on('uncaughtException', () => {
-  if (server) {
-    server.close(() => {
+  if (myServer) {
+    myServer.close(() => {
       process.exit(1);
     });
   }
