@@ -16,6 +16,9 @@ const io = new SocketIOServer(server, {
   },
 });
 
+// online user
+const onlineUser = new Set();
+
 // Socket.IO connection event
 io.on('connection', async (socket) => {
   console.log('User connected:', socket.id);
@@ -23,10 +26,19 @@ io.on('connection', async (socket) => {
   console.log(token);
   // current user details
   const currentUser = await getUserDetailsFromToken(token);
-  console.log(currentUser);
+  // console.log(currentUser);
+  const userId = currentUser?._id.toString();
+  // create a room-------------------------
+  socket.join(userId as string);
+  // set online user
+  onlineUser.add(userId);
+  // send to the client
+  io.emit('onlineUser', Array.from(onlineUser));
+
   // Handle disconnection
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
+    onlineUser.delete(userId);
   });
 });
 
