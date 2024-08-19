@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import http, { Server as HTTPServer } from 'http';
 import getUserDetailsFromToken from '../helpers/getUserDetailsFromToken';
+import User from '../models/user.model';
 
 export const app: Application = express();
 
@@ -23,7 +24,7 @@ const onlineUser = new Set();
 io.on('connection', async (socket) => {
   console.log('User connected:', socket.id);
   const token = socket.handshake.auth.token;
-  console.log(token);
+  // console.log(token);
   // current user details
   const currentUser = await getUserDetailsFromToken(token);
   // console.log(currentUser);
@@ -34,6 +35,18 @@ io.on('connection', async (socket) => {
   onlineUser.add(userId);
   // send to the client
   io.emit('onlineUser', Array.from(onlineUser));
+
+  // message page
+  socket.on('message-page', async (userId) => {
+    // console.log('message page userId', userId);
+    const userDetails = await User.findById(userId).select('-password');
+    const payload = {
+      _id: userDetails?._id,
+      name: userDetails?.name,
+      email: userDetails?.email,
+      online: onlineUser.has(userId),
+    };
+  });
 
   // Handle disconnection
   socket.on('disconnect', () => {
