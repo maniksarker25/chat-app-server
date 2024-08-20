@@ -81,6 +81,12 @@ io.on('connection', async (socket) => {
       msgByUserId: data?.msgByUserId,
     };
     const saveMessage = await Message.create(messageData);
+    const updateConversation = await Conversation.updateOne(
+      { _id: conversation?._id },
+      {
+        $push: { messages: saveMessage?._id },
+      },
+    );
   });
 
   // Handle disconnection
