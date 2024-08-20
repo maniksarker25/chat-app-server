@@ -38,20 +38,32 @@ io.on('connection', async (socket) => {
 
   // message page
   socket.on('message-page', async (userId) => {
-    // console.log('message page userId', userId);
+    console.log('Received message-page for userId:', userId);
+
     const userDetails = await User.findById(userId).select('-password');
-    const payload = {
-      _id: userDetails?._id,
-      name: userDetails?.name,
-      email: userDetails?.email,
-      online: onlineUser.has(userId),
-    };
+    if (userDetails) {
+      const payload = {
+        _id: userDetails._id,
+        name: userDetails.name,
+        email: userDetails.email,
+        profile_pic: userDetails?.profile_pic,
+        online: onlineUser.has(userId),
+      };
+      socket.emit('message-user', payload);
+    } else {
+      console.log('User not found');
+    } // Fetch user details from the database
+  });
+
+  // new message -----------------------------------
+  socket.on('new message', (data) => {
+    console.log('new message ', data);
   });
 
   // Handle disconnection
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
     onlineUser.delete(userId);
+    console.log('User disconnected:', socket.id);
   });
 });
 

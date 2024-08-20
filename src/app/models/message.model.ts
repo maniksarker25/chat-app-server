@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { IMessage } from '../interface/message.interface';
 
 const messageSchema = new Schema<IMessage>(
@@ -18,6 +18,11 @@ const messageSchema = new Schema<IMessage>(
     seen: {
       type: Boolean,
       default: false,
+    },
+    msgByUserId: {
+      type: mongoose.Schema.ObjectId,
+      required: true,
+      ref: 'User',
     },
   },
   {
