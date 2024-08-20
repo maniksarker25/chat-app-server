@@ -87,6 +87,16 @@ io.on('connection', async (socket) => {
         $push: { messages: saveMessage?._id },
       },
     );
+    // get the conversation
+    const getConversationMessage = await Conversation.findOne({
+      $or: [
+        { sender: data?.sender, receiver: data?.receiver },
+        { sender: data?.receiver, receiver: data?.sender },
+      ],
+    })
+      .populate('messages')
+      .sort({ updatedAt: -1 });
+    console.log('conversation mesage', getConversationMessage);
   });
 
   // Handle disconnection
