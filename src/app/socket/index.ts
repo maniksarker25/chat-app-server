@@ -3,6 +3,8 @@ import { Server as SocketIOServer } from 'socket.io';
 import http, { Server as HTTPServer } from 'http';
 import getUserDetailsFromToken from '../helpers/getUserDetailsFromToken';
 import User from '../models/user.model';
+import Conversation from '../models/conversation.model';
+import Message from '../models/message.model';
 
 export const app: Application = express();
 
@@ -56,8 +58,29 @@ io.on('connection', async (socket) => {
   });
 
   // new message -----------------------------------
-  socket.on('new message', (data) => {
+  socket.on('new message', async (data) => {
     console.log('new message ', data);
+    let conversation = await Conversation.findOne({
+      $or: [
+        { sender: data?.sender, receiver: data?.receiver },
+        { sender: data?.receiver, receiver: data?.sender },
+      ],
+    });
+    // console.log(conversation);
+    // if conversation is not available then create a new conversation
+    if (!conversation) {
+      conversation = await Conversation.create({
+        sender: data?.sender,
+        receiver: data?.receiver,
+      });
+    }
+    const messageData = {
+      text: data.text,
+      imageUrl: data.imageUrl,
+      videoUrl: data.videoUrl,
+      msgByUserId: data?.msgByUserId,
+    };
+    const saveMessage = await Message.create(messageData);
   });
 
   // Handle disconnection
