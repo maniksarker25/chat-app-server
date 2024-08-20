@@ -30,11 +30,11 @@ io.on('connection', async (socket) => {
   // current user details
   const currentUser = await getUserDetailsFromToken(token);
   // console.log(currentUser);
-  const userId = currentUser?._id.toString();
+  const currentUserId = currentUser?._id.toString();
   // create a room-------------------------
-  socket.join(userId as string);
+  socket.join(currentUserId as string);
   // set online user
-  onlineUser.add(userId);
+  onlineUser.add(currentUserId);
   // send to the client
   io.emit('onlineUser', Array.from(onlineUser));
 
@@ -54,12 +54,23 @@ io.on('connection', async (socket) => {
       socket.emit('message-user', payload);
     } else {
       console.log('User not found');
-    } // Fetch user details from the database
+    }
+    //get previous message
+    const getConversationMessage = await Conversation.findOne({
+      $or: [
+        { sender: currentUserId, receiver: userId },
+        { sender: userId, receiver: currentUserId },
+      ],
+    })
+      .populate('messages')
+      .sort({ updatedAt: -1 });
+
+    socket.emit('message', getConversationMessage?.messages || []);
   });
 
   // new message -----------------------------------
   socket.on('new message', async (data) => {
-    console.log('new message ', data);
+    // console.log('new message ', data);
     let conversation = await Conversation.findOne({
       $or: [
         { sender: data?.sender, receiver: data?.receiver },
@@ -87,6 +98,7 @@ io.on('connection', async (socket) => {
         $push: { messages: saveMessage?._id },
       },
     );
+    console.log(updateConversation);
     // get the conversation
     const getConversationMessage = await Conversation.findOne({
       $or: [
@@ -96,12 +108,18 @@ io.on('connection', async (socket) => {
     })
       .populate('messages')
       .sort({ updatedAt: -1 });
-    console.log('conversation mesage', getConversationMessage);
+    // console.log('conversation mesage', getConversationMessage);
+    // send to the frontend ---------------
+    io.to(data?.sender).emit('message', getConversationMessage?.messages || []);
+    io.to(data?.receiver).emit(
+      'message',
+      getConversationMessage?.messages || [],
+    );
   });
 
   // Handle disconnection
   socket.on('disconnect', () => {
-    onlineUser.delete(userId);
+    onlineUser.delete(currentUserId);
     console.log('User disconnected:', socket.id);
   });
 });
