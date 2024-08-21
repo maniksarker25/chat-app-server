@@ -5,6 +5,7 @@ import getUserDetailsFromToken from '../helpers/getUserDetailsFromToken';
 import User from '../models/user.model';
 import Conversation from '../models/conversation.model';
 import Message from '../models/message.model';
+import { getConversation } from '../helpers/getConversation';
 
 export const app: Application = express();
 
@@ -117,33 +118,18 @@ io.on('connection', async (socket) => {
       'message',
       getConversationMessage?.messages || [],
     );
+
+    //send conversation
+    const conversationSender = await getConversation(data?.sender);
+    const conversationReceiver = await getConversation(data?.receiver);
+
+    io.to(data?.sender).emit('conversation', conversationSender);
+    io.to(data?.receiver).emit('conversation', conversationReceiver);
   });
 
   // sidebar
   socket.on('sidebar', async (crntUserId) => {
-    // console.log('current user id', crntUserId);
-    const currentUserConversation = await Conversation.find({
-      $or: [{ sender: crntUserId }, { receiver: crntUserId }],
-    })
-      .sort({ updatedAt: -1 })
-      .populate({
-        path: 'messages',
-        model: 'Message', // Explicitly specify the model if needed
-      });
-    // console.log('currentUserConversation', currentUserConversation);
-    const conversation = currentUserConversation?.map((conv) => {
-      const countUnseenMessage = conv.messages?.reduce(
-        (prev, curr) => prev + (curr.seen ? 0 : 1),
-        0,
-      );
-      return {
-        _id: conv?._id,
-        sender: conv?.sender,
-        receiver: conv?.receiver,
-        unseenMsg: countUnseenMessage,
-        lastMsg: conv?.messages[conv?.messages?.length - 1],
-      };
-    });
+    const conversation = await getConversation(crntUserId);
     // console.log(conversation);
     socket.emit('conversation', conversation);
   });
