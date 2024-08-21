@@ -134,6 +134,30 @@ io.on('connection', async (socket) => {
     socket.emit('conversation', conversation);
   });
 
+  // send
+  socket.on('seen', async (msgByUserId) => {
+    const conversation = await Conversation.findOne({
+      $or: [
+        { sender: currentUserId, receiver: msgByUserId },
+        { sender: msgByUserId, receiver: currentUserId },
+      ],
+    });
+
+    const conversationMessageId = conversation?.messages || [];
+    // update the messages
+    const updateMessages = await Message.updateMany(
+      { _id: { $in: conversationMessageId }, msgByUserId: msgByUserId },
+      { $set: { seen: true } },
+    );
+
+    //send conversation
+    const conversationSender = await getConversation(currentUserId as string);
+    const conversationReceiver = await getConversation(msgByUserId);
+
+    io.to(currentUserId as string).emit('conversation', conversationSender);
+    io.to(msgByUserId).emit('conversation', conversationReceiver);
+  });
+
   // Handle disconnection
   socket.on('disconnect', () => {
     onlineUser.delete(currentUserId);
