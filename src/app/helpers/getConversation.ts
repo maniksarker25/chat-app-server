@@ -14,10 +14,15 @@ export const getConversation = async (crntUserId: string) => {
       .populate('receiver');
     // console.log('currentUserConversation', currentUserConversation);
     const conversation = currentUserConversation?.map((conv) => {
-      const countUnseenMessage = conv.messages?.reduce(
-        (prev, curr) => prev + (curr.seen ? 0 : 1),
-        0,
-      );
+      const countUnseenMessage = conv.messages?.reduce((prev, curr) => {
+        const msgByUserId = curr?.msgByUserId?.toString();
+
+        if (msgByUserId !== crntUserId) {
+          return prev + (curr?.seen ? 0 : 1);
+        } else {
+          return prev;
+        }
+      }, 0);
       return {
         _id: conv?._id,
         sender: conv?.sender,
